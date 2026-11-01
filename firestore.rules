@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isBootstrappedAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'ologuntimilehin94@gmail.com'
+      );
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdmin() || (
+        isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Products: Visitors can read published products. Admins have full access.
+    match /products/{productId} {
+      allow read: if isValidId(productId) && (
+        (resource != null && resource.data.status == 'published') || isAdmin()
+      );
+      allow create: if isValidId(productId) && isAdmin();
+      allow update: if isValidId(productId) && isAdmin();
+      allow delete: if isValidId(productId) && isAdmin();
+    }
+
+    // Newsletter Subscribers: Anyone can subscribe, only admins can view or manage
+    match /newsletter_subscribers/{subscriberId} {
+      allow create: if isValidId(subscriberId) &&
+        request.resource.data.email is string &&
+        request.resource.data.email.size() >= 3 &&
+        request.resource.data.email.size() <= 150 &&
+        request.resource.data.consent == true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Admin collection
+    match /admins/{adminId} {
+      allow read: if isSignedIn() && (request.auth.uid == adminId || isAdmin());
+      allow write: if isAdmin();
+    }
+  }
+}

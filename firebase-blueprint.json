@@ -1,0 +1,69 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Affiliate product listing with pricing, categorization, external link, and presentation metadata",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 150 },
+        "category": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "shortDescription": { "type": "string", "minLength": 5, "maxLength": 300 },
+        "fullDescription": { "type": "string", "minLength": 5, "maxLength": 4000 },
+        "price": { "type": "number" },
+        "previousPrice": { "type": "number" },
+        "discountPercentage": { "type": "number" },
+        "rating": { "type": "number" },
+        "reviewsCount": { "type": "number" },
+        "buttonText": { "type": "string", "maxLength": 50 },
+        "affiliateUrl": { "type": "string", "maxLength": 1000 },
+        "imageUrl": { "type": "string", "maxLength": 2000000 },
+        "additionalImages": { "type": "array" },
+        "features": { "type": "array" },
+        "benefits": { "type": "array" },
+        "isFeatured": { "type": "boolean" },
+        "isTrending": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["published", "draft"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "createdBy": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["name", "category", "shortDescription", "price", "affiliateUrl", "imageUrl", "status"]
+    },
+    "NewsletterSubscriber": {
+      "title": "NewsletterSubscriber",
+      "description": "Visitor email subscriptions for new product updates and offers",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 150 },
+        "subscribedAt": { "type": "string" },
+        "consent": { "type": "boolean" }
+      },
+      "required": ["email", "subscribedAt", "consent"]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Authorized administrator profiles with access to product management",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 150 },
+        "role": { "type": "string", "enum": ["superadmin", "editor"] },
+        "addedAt": { "type": "string" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Collection of all published and draft affiliate products"
+    },
+    "/newsletter_subscribers/{subscriberId}": {
+      "schema": "NewsletterSubscriber",
+      "description": "Emails registered for newsletter and new arrival notifications"
+    },
+    "/admins/{adminId}": {
+      "schema": "AdminUser",
+      "description": "Registered administrator accounts authorized to mutate products"
+    }
+  }
+}

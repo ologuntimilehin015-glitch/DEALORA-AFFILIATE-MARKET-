@@ -1,0 +1,6 @@
+{
+  "name": "OmniSync Market",
+  "description": "Discover More. Choose Better. Shop Smarter. A curated multi-category affiliate product discovery platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
